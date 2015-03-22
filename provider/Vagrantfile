@@ -1,0 +1,21 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Not to type --provider=docker' all the time
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+Vagrant.configure(2) do |config|
+
+  # Image taken from projectatomic/docker-image-examples
+  config.vm.provider 'docker' do |d|
+    # Build from Dockerfile in this repository
+    d.build_dir = "."
+
+    # Expose ports
+    d.ports = ["27017:27017"]
+  end
+
+  # config.vm.network "forwarded_port", guest: 80, host: 8080
+
+  # config.vm.network "private_network", ip: "192.168.33.10"
+end

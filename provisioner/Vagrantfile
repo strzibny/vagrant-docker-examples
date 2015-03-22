@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "humaton/fedora-21-cloud"
+
+  config.vm.provision "shell", inline: <<SHELL
+sudo yum install docker -y
+sudo systemctl enable docker
+
+# This won't be done for us
+sudo groupadd docker || :
+
+# This done automatically:
+# sudo usermod -a -G docker $USERNAME
+SHELL
+
+  config.vm.provision "docker" do |d|
+    d.pull_images 'clue/adminer'
+    #d.run 'clue/adminer',
+    #  args: '-d -p 80:80'
+  end
+
+  # or use Docker restart policies:
+  #   https://docs.docker.com/articles/host_integration/
+  config.vm.provision "docker", run: "always" do |d|
+    d.run 'clue/adminer',
+      args: '-d -p 80:80'
+  end
+
+  config.vm.network "forwarded_port", guest: 80, host: 8080
+
+end
